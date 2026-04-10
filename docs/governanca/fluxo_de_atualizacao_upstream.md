@@ -10,6 +10,26 @@ Manter o fork alinhado ao repositorio original sem misturar customizacoes locais
 - Customizacoes devem viver em branches de adaptacao ou em codigo isolado fora do core.
 - A atualizacao de upstream nao deve ser feita sobre um worktree sujo.
 
+## Roteiro rapido semanal
+
+Use este fluxo quando quiser manter uma branch de trabalho alinhada ao projeto original sem mexer no core do fork:
+
+```bash
+git fetch upstream --prune
+git switch <sua-branch>
+git rebase upstream/main
+python -m pytest tests/hermes_cli/test_totvs_rm_project_plugin.py tests/tools/test_totvs_rm_mock_tool.py tests/tools/test_totvs_rm_real_tool.py -q
+git push --force-with-lease origin <sua-branch>
+```
+
+Se voce tambem mantiver o `main` do fork espelhado no upstream, atualize ele separadamente:
+
+```bash
+git switch main
+git merge --ff-only upstream/main
+git push origin main
+```
+
 ## Verificacao antes do update
 
 ```bash

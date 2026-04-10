@@ -23,7 +23,7 @@ Este diretorio concentra a governanca leve do fork.
 - Mapa arquitetural: descreve a estrutura real do repositorio e os fluxos principais.
 - Guardrails: define regras obrigatorias e limites de alteracao.
 - Padroes de extensao: explica como adicionar capacidade sem acoplar ao core.
-- Fluxo de atualizacao upstream: define a rotina operacional de sincronizacao com a origem.
+- Fluxo de atualizacao upstream: define a rotina operacional de sincronizacao com a origem e o roteiro rapido de manutencao semanal.
 - ADRs: registram decisoes arquiteturais com contexto, decisao e consequencias.
 
 ## Regras basicas do fork
