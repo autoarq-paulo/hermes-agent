@@ -4,6 +4,7 @@
 
 - Validar a estrategia desacoplada de integracao com TOTVS RM sem rede, sem banco real e sem tocar no core.
 - A tool `totvs_rm_mock` consulta apenas fixtures JSON locais e devolve o envelope padronizado do fork.
+- A tool e carregada apenas pelo plugin de projeto `.hermes/plugins/totvs_rm/`; a ativacao depende de `HERMES_ENABLE_PROJECT_PLUGINS=true`.
 
 ## Actions suportadas
 
@@ -29,7 +30,8 @@
 - `integrations/totvs_rm/mock_service.py` implementa a logica de dominio e filtros.
 - `adapters/totvs_rm/response_adapter.py` monta o envelope final.
 - `tools/totvs_rm_mock_tool.py` segue como borda fina, sem registro automatico.
-- O plugin de projeto `.hermes/plugins/totvs_rm/` faz o registro no Hermes quando `HERMES_ENABLE_PROJECT_PLUGINS=true`.
+- O plugin de projeto `.hermes/plugins/totvs_rm/` e o ponto unico de entrada da integracao.
+- Nao existe mais dependencia do discovery custom anterior nem de ajuste em `model_tools.py` para carregar a tool.
 
 ## Valor arquitetural
 
@@ -41,3 +43,4 @@
 
 - A tool continua fora do discovery do core.
 - O plugin de projeto preserva o desacoplamento do core e evita reestruturar `model_tools.py`.
+- Quando a variavel de ambiente nao estiver ativa, o core permanece limpo e a extensao nao entra.

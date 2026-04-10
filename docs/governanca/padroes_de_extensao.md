@@ -4,12 +4,20 @@
 
 Definir como estender o fork sem acoplar ao core. O principio e simples: se a capacidade e nova ou externa, ela entra pela borda, nao pelo nucleo.
 
+## Padrao oficial de extensao do fork
+
+- Extensoes de dominio do fork devem ser implementadas como plugins de projeto em `.hermes/plugins/<nome>/`.
+- Cada plugin deve declarar seu manifesto em `plugin.yaml` e registrar as tools no proprio entrypoint.
+- Wrappers podem continuar em `tools/`, mas o carregamento e a responsabilidade de registro pertencem ao plugin.
+- Nao alterar `model_tools.py` para descoberta de extensoes do fork e nao criar auto-registro por import nos wrappers.
+- Ative os plugins de projeto apenas quando o contexto precisar da extensao, por exemplo com `HERMES_ENABLE_PROJECT_PLUGINS=true`.
+- Plugins instalados ou de projeto podem coexistir, mas o fork nao deve depender de hooks especiais no core para carregar extensoes de dominio.
+
 ## Onde criar tools
 
 - Criar novas tools em `tools/<nome>_tool.py`.
 - Registrar schema, handler e disponibilidade em `tools/registry.py`.
-- Colocar a extensao do fork em um plugin de projeto em `.hermes/plugins/<nome>/` ou em um plugin instalado; nao adicionar discovery especial no core.
-- Manter `model_tools.CORE_TOOL_MODULES` como baseline fixo do Hermes; extensoes do fork entram pelo sistema de plugins, ativado com `HERMES_ENABLE_PROJECT_PLUGINS=true` quando forem plugins de projeto.
+- Para tools de dominio do fork, use o padrao oficial de plugin de projeto; a tool em `tools/` deve ser apenas uma borda fina.
 - Manter a resposta da tool em JSON string.
 - Se a tool for especifica do fork, isolar a logica em modulo proprio e expor apenas um wrapper fino para o registry.
 
@@ -21,7 +29,8 @@ Definir como estender o fork sem acoplar ao core. O principio e simples: se a ca
 
 ## Estrutura sugerida para o fork
 
-- `custom/`: regras e glue code especificos do fork.
+- `.hermes/plugins/`: manifestos e entrypoints dos plugins de projeto do fork.
+- `custom/`: regras e glue code especificos do fork, sem discovery.
 - `integrations/`: conectores para sistemas externos.
 - `adapters/`: traducao fina entre Hermes e sistemas externos.
 - `fixtures/`: CSV e JSON de mock para validacao inicial.

@@ -29,9 +29,10 @@ Este diretorio concentra a governanca leve do fork.
 ## Regras basicas do fork
 
 - `main` deve permanecer limpa e o mais proxima possivel do `upstream/main`.
-- Customizacoes devem entrar por tools, adapters, plugins ou codigo custom fora do core.
+- Customizacoes devem entrar por tools, adapters e plugins de projeto; evitar discovery custom no core.
 - Qualquer mudanca na Zona A exige ADR, analise de impacto e teste.
 - Integracoes externas, incluindo TOTVS RM, nao devem ser acopladas ao core.
+- Extensoes de dominio do fork devem preferir plugins de projeto em `.hermes/plugins/`; use `HERMES_ENABLE_PROJECT_PLUGINS=true` apenas quando a extensao precisar estar ativa.
 - O uso de mock com CSV/JSON e a primeira etapa padrao para novas integracoes.
 - Mudancas que alterem prompt, schema de tool, persistencia ou contrato de adapter sao mudancas arquiteturais, nao ajustes pontuais.
 
@@ -45,6 +46,8 @@ Este diretorio concentra a governanca leve do fork.
 - [adr/ADR-002-protecao-do-core.md](./adr/ADR-002-protecao-do-core.md)
 - [adr/ADR-003-integracao-rm-desacoplada.md](./adr/ADR-003-integracao-rm-desacoplada.md)
 - [adr/ADR-004-ambiente-local-wsl2-docker.md](./adr/ADR-004-ambiente-local-wsl2-docker.md)
+- [adr/ADR-005-extensoes-via-plugin-de-projeto.md](./adr/ADR-005-extensoes-via-plugin-de-projeto.md)
+- [ativacao_plugins_projeto.md](./ativacao_plugins_projeto.md)
 
 ## Termos usados
 
