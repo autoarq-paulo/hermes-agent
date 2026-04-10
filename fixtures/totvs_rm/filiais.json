@@ -1,0 +1,33 @@
+[
+  {
+    "id": 101,
+    "coligada_id": 1,
+    "coligada_codigo": "COL001",
+    "codigo": "SP01",
+    "nome": "Matriz Sao Paulo",
+    "cidade": "Sao Paulo",
+    "uf": "SP",
+    "ativa": true
+  },
+  {
+    "id": 102,
+    "coligada_id": 1,
+    "coligada_codigo": "COL001",
+    "codigo": "RJ01",
+    "nome": "Filial Rio de Janeiro",
+    "cidade": "Rio de Janeiro",
+    "uf": "RJ",
+    "ativa": true
+  },
+  {
+    "id": 201,
+    "coligada_id": 2,
+    "coligada_codigo": "COL002",
+    "codigo": "BH01",
+    "nome": "Unidade Belo Horizonte",
+    "cidade": "Belo Horizonte",
+    "uf": "MG",
+    "ativa": true
+  }
+]
+

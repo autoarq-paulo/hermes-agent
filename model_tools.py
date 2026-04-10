@@ -22,6 +22,7 @@ Public API (signatures preserved from the original 2,400-line version):
 
 import json
 import asyncio
+import importlib
 import logging
 import threading
 from typing import Dict, Any, List, Optional, Tuple
@@ -30,6 +31,12 @@ from tools.registry import registry
 from toolsets import resolve_toolset, validate_toolset
 
 logger = logging.getLogger(__name__)
+
+try:
+    from custom.tool_discovery import FORK_TOOL_MODULES
+except Exception as e:
+    logger.debug("Fork tool discovery unavailable: %s", e)
+    FORK_TOOL_MODULES = ()
 
 
 # =============================================================================
@@ -129,42 +136,49 @@ def _run_async(coro):
 # Tool Discovery  (importing each module triggers its registry.register calls)
 # =============================================================================
 
+CORE_TOOL_MODULES = [
+    "tools.web_tools",
+    "tools.terminal_tool",
+    "tools.file_tools",
+    "tools.vision_tools",
+    "tools.mixture_of_agents_tool",
+    "tools.image_generation_tool",
+    "tools.skills_tool",
+    "tools.skill_manager_tool",
+    "tools.browser_tool",
+    "tools.cronjob_tools",
+    "tools.rl_training_tool",
+    "tools.tts_tool",
+    "tools.todo_tool",
+    "tools.memory_tool",
+    "tools.session_search_tool",
+    "tools.clarify_tool",
+    "tools.code_execution_tool",
+    "tools.delegate_tool",
+    "tools.process_registry",
+    "tools.send_message_tool",
+    # "tools.honcho_tools",  # Removed — Honcho is now a memory provider plugin
+    "tools.homeassistant_tool",
+]
+
+
+def _import_tool_module(mod_name: str) -> None:
+    try:
+        importlib.import_module(mod_name)
+    except Exception as e:
+        logger.warning("Could not import tool module %s: %s", mod_name, e)
+
+
 def _discover_tools():
-    """Import all tool modules to trigger their registry.register() calls.
+    """Import core tools, then fork tools, to trigger registry.register() calls.
 
     Wrapped in a function so import errors in optional tools (e.g., fal_client
     not installed) don't prevent the rest from loading.
     """
-    _modules = [
-        "tools.web_tools",
-        "tools.terminal_tool",
-        "tools.file_tools",
-        "tools.vision_tools",
-        "tools.mixture_of_agents_tool",
-        "tools.image_generation_tool",
-        "tools.skills_tool",
-        "tools.skill_manager_tool",
-        "tools.browser_tool",
-        "tools.cronjob_tools",
-        "tools.rl_training_tool",
-        "tools.tts_tool",
-        "tools.todo_tool",
-        "tools.memory_tool",
-        "tools.session_search_tool",
-        "tools.clarify_tool",
-        "tools.code_execution_tool",
-        "tools.delegate_tool",
-        "tools.process_registry",
-        "tools.send_message_tool",
-        # "tools.honcho_tools",  # Removed — Honcho is now a memory provider plugin
-        "tools.homeassistant_tool",
-    ]
-    import importlib
-    for mod_name in _modules:
-        try:
-            importlib.import_module(mod_name)
-        except Exception as e:
-            logger.warning("Could not import tool module %s: %s", mod_name, e)
+    for mod_name in CORE_TOOL_MODULES:
+        _import_tool_module(mod_name)
+    for mod_name in FORK_TOOL_MODULES:
+        _import_tool_module(mod_name)
 
 
 _discover_tools()
