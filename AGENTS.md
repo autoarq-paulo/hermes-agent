@@ -345,6 +345,15 @@ Hermes-Agent ensures caching remains valid throughout a conversation. **Do NOT i
 
 Cache-breaking forces dramatically higher costs. The ONLY time we alter context is during context compression.
 
+- Extensoes de dominio do fork devem preferir plugins de projeto em `.hermes/plugins/`; plugins sao a fronteira de integracao, nao o core.
+
+### Intentional Technical Fallbacks Must Be Explicit
+
+- Any workaround, compatibility shim, placeholder, controlled exception, or technical fallback that could be misread as a final design choice must be commented in code with its intent and limit.
+- When the decision has architectural impact, also record it in governance documentation and link the code comment to that rationale when practical.
+- Comments should explain why the construct exists, what it is not, and when it must be revisited. Do not narrate obvious syntax.
+- Treat fallback technical paths as temporary or scoped mitigations unless governance says otherwise.
+
 ### Working Directory Behavior
 - **CLI**: Uses current directory (`.` → `os.getcwd()`)
 - **Messaging**: Uses `MESSAGING_CWD` env var (default: home directory)
