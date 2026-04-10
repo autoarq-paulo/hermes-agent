@@ -1,0 +1,6 @@
+name: totvs_rm
+version: 1.0.0
+description: Project plugin that registers the TOTVS RM mock and controlled real tools
+provides_tools:
+  - totvs_rm_mock
+  - totvs_rm_real
