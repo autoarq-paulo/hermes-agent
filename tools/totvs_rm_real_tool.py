@@ -1,4 +1,9 @@
-"""Thin Hermes tool wrapper for the controlled TOTVS RM real integration."""
+"""Thin Hermes tool wrapper for the controlled TOTVS RM real integration.
+
+The actual registration happens in the project plugin under
+``.hermes/plugins/totvs_rm`` so this module stays importable without
+side effects and the fork-specific discovery path stays out of the core.
+"""
 
 from __future__ import annotations
 
@@ -7,8 +12,6 @@ from typing import Any
 from adapters.totvs_rm import real_response_adapter
 from integrations.totvs_rm import real_service
 from integrations.totvs_rm.real_errors import TotvsRmRealError
-from integrations.totvs_rm.real_schemas import SOURCE_NAME, TOOL_SCHEMA
-from tools.registry import registry
 
 
 def _normalize_request(args: Any) -> dict[str, Any]:
@@ -41,12 +44,3 @@ def totvs_rm_real_tool(args: Any, **_kwargs) -> str:
             "Erro inesperado na integracao real TOTVS RM",
         )
     return real_response_adapter.serialize_response(result)
-
-
-registry.register(
-    name=SOURCE_NAME,
-    toolset=SOURCE_NAME,
-    schema=TOOL_SCHEMA,
-    handler=totvs_rm_real_tool,
-    emoji="",
-)

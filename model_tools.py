@@ -4,9 +4,10 @@ Model Tools Module
 
 Thin orchestration layer over the tool registry. Each tool file in tools/
 self-registers its schema, handler, and metadata via tools.registry.register().
-This module triggers discovery (by importing all tool modules), then provides
-the public API that run_agent.py, cli.py, batch_runner.py, and the RL
-environments consume.
+Fork or project extensions load through the plugin system, which registers
+their tools after the core imports finish. This module triggers discovery (by
+importing the core tool modules), then provides the public API that
+run_agent.py, cli.py, batch_runner.py, and the RL environments consume.
 
 Public API (signatures preserved from the original 2,400-line version):
     get_tool_definitions(enabled_toolsets, disabled_toolsets, quiet_mode) -> list
@@ -22,7 +23,6 @@ Public API (signatures preserved from the original 2,400-line version):
 
 import json
 import asyncio
-import importlib
 import logging
 import threading
 from typing import Dict, Any, List, Optional, Tuple
@@ -31,12 +31,6 @@ from tools.registry import registry
 from toolsets import resolve_toolset, validate_toolset
 
 logger = logging.getLogger(__name__)
-
-try:
-    from custom.tool_discovery import FORK_TOOL_MODULES
-except Exception as e:
-    logger.debug("Fork tool discovery unavailable: %s", e)
-    FORK_TOOL_MODULES = ()
 
 
 # =============================================================================
@@ -133,7 +127,7 @@ def _run_async(coro):
 
 
 # =============================================================================
-# Tool Discovery  (importing each module triggers its registry.register calls)
+# Tool Discovery  (importing each core module triggers its registry.register calls)
 # =============================================================================
 
 CORE_TOOL_MODULES = [
@@ -162,23 +156,19 @@ CORE_TOOL_MODULES = [
 ]
 
 
-def _import_tool_module(mod_name: str) -> None:
-    try:
-        importlib.import_module(mod_name)
-    except Exception as e:
-        logger.warning("Could not import tool module %s: %s", mod_name, e)
-
-
 def _discover_tools():
-    """Import core tools, then fork tools, to trigger registry.register() calls.
+    """Import core tools to trigger registry.register() calls.
 
     Wrapped in a function so import errors in optional tools (e.g., fal_client
     not installed) don't prevent the rest from loading.
     """
+    import importlib
+
     for mod_name in CORE_TOOL_MODULES:
-        _import_tool_module(mod_name)
-    for mod_name in FORK_TOOL_MODULES:
-        _import_tool_module(mod_name)
+        try:
+            importlib.import_module(mod_name)
+        except Exception as e:
+            logger.warning("Could not import tool module %s: %s", mod_name, e)
 
 
 _discover_tools()

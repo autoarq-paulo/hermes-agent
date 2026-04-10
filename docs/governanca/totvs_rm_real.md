@@ -20,7 +20,7 @@
 
 ## Exposicao ao agente
 
-- A tool real e `totvs_rm_real`, registrada no ponto de extensao do fork.
+- A tool real e `totvs_rm_real`, registrada pelo plugin de projeto `.hermes/plugins/totvs_rm/` quando `HERMES_ENABLE_PROJECT_PLUGINS=true`.
 - A tool mock continua separada como `totvs_rm_mock`.
 - Nao existe fallback implicito entre as duas tools.
 - Se a configuracao real nao existir, a tool real retorna erro controlado no envelope padronizado.
@@ -29,6 +29,6 @@
 
 - Estao preparados `buscar_funcionario_por_chapa`, `buscar_movimento_por_id`, `buscar_filial_por_id` e `buscar_coligada_por_codigo`.
 - O client agora diferencia rota, metodo e headers por action, mas ainda usa transporte injetavel nos testes.
-- A tool real foi registrada apenas no ponto de extensao do fork, sem discovery novo fora dessa borda.
+- A tool real foi mantida fora do discovery do core e entra apenas pelo plugin de projeto.
 - Nao ha rede real obrigatoria nem banco de producao.
 - A evolucao futura pode ampliar o client e o service sem reestruturar o fork.

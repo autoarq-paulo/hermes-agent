@@ -28,7 +28,8 @@
 - `integrations/totvs_rm/mock_loader.py` le os dados locais.
 - `integrations/totvs_rm/mock_service.py` implementa a logica de dominio e filtros.
 - `adapters/totvs_rm/response_adapter.py` monta o envelope final.
-- `tools/totvs_rm_mock_tool.py` segue como borda fina registrada no Hermes.
+- `tools/totvs_rm_mock_tool.py` segue como borda fina, sem registro automatico.
+- O plugin de projeto `.hermes/plugins/totvs_rm/` faz o registro no Hermes quando `HERMES_ENABLE_PROJECT_PLUGINS=true`.
 
 ## Valor arquitetural
 
@@ -38,6 +39,5 @@
 
 ## Excecao controlada
 
-- A tool continua descoberta pelo ponto de extensao `custom/tool_discovery.py`.
-- `model_tools.py` permanece com o baseline fixo e o discovery do fork.
-- Isso preserva o desacoplamento do core e evita reestruturar o mecanismo existente.
+- A tool continua fora do discovery do core.
+- O plugin de projeto preserva o desacoplamento do core e evita reestruturar `model_tools.py`.

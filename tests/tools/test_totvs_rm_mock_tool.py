@@ -2,17 +2,10 @@
 
 import json
 
-from custom.tool_discovery import FORK_TOOL_MODULES
-from model_tools import CORE_TOOL_MODULES
-from tools.registry import registry
 from tools.totvs_rm_mock_tool import TOOL_SCHEMA, totvs_rm_mock_tool
 
 
-class TestToolRegistration:
-    def test_tool_is_registered_under_its_own_toolset(self):
-        assert registry.get_toolset_for_tool("totvs_rm_mock") == "totvs_rm_mock"
-        assert registry.get_schema("totvs_rm_mock") == TOOL_SCHEMA
-
+class TestToolSchema:
     def test_schema_lists_supported_actions(self):
         enum_values = TOOL_SCHEMA["parameters"]["properties"]["action"]["enum"]
         assert enum_values == [
@@ -41,10 +34,6 @@ class TestToolRegistration:
 
     def test_schema_is_closed_at_top_level(self):
         assert TOOL_SCHEMA["parameters"]["additionalProperties"] is False
-
-    def test_fork_tool_is_registered_in_custom_discovery_boundary(self):
-        assert "tools.totvs_rm_mock_tool" in FORK_TOOL_MODULES
-        assert "tools.totvs_rm_mock_tool" not in CORE_TOOL_MODULES
 
 
 class TestToolOutputContract:

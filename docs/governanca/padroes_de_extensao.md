@@ -8,8 +8,8 @@ Definir como estender o fork sem acoplar ao core. O principio e simples: se a ca
 
 - Criar novas tools em `tools/<nome>_tool.py`.
 - Registrar schema, handler e disponibilidade em `tools/registry.py`.
-- Incluir o modulo em `custom/tool_discovery.py` quando a tool for extensao do fork.
-- Manter `model_tools.CORE_TOOL_MODULES` como baseline fixo do Hermes e importar o ponto de extensao do fork logo depois.
+- Colocar a extensao do fork em um plugin de projeto em `.hermes/plugins/<nome>/` ou em um plugin instalado; nao adicionar discovery especial no core.
+- Manter `model_tools.CORE_TOOL_MODULES` como baseline fixo do Hermes; extensoes do fork entram pelo sistema de plugins, ativado com `HERMES_ENABLE_PROJECT_PLUGINS=true` quando forem plugins de projeto.
 - Manter a resposta da tool em JSON string.
 - Se a tool for especifica do fork, isolar a logica em modulo proprio e expor apenas um wrapper fino para o registry.
 

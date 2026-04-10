@@ -2,22 +2,14 @@
 
 import json
 
-import tools.totvs_rm_mock_tool as mock_tool_module
 import tools.totvs_rm_real_tool as real_tool_module
 
-from custom.tool_discovery import FORK_TOOL_MODULES
 from integrations.totvs_rm.real_errors import TotvsRmRealConfigurationError
 from integrations.totvs_rm.real_schemas import SOURCE_NAME, TOOL_SCHEMA
-from model_tools import CORE_TOOL_MODULES
-from tools.registry import registry
 
 
-class TestRealToolRegistration:
-    def test_tool_is_registered_under_its_own_toolset(self):
-        assert registry.get_toolset_for_tool(SOURCE_NAME) == SOURCE_NAME
-        assert registry.get_schema(SOURCE_NAME) == TOOL_SCHEMA
-
-    def test_schema_lists_supported_actions(self):
+class TestRealToolSchema:
+    def test_tool_schema_lists_supported_actions(self):
         enum_values = TOOL_SCHEMA["parameters"]["properties"]["action"]["enum"]
         assert enum_values == [
             "buscar_funcionario_por_chapa",
@@ -32,17 +24,8 @@ class TestRealToolRegistration:
         assert "nao e o mock" in description
         assert "nao faz fallback" in description
 
-    def test_real_tool_stays_in_fork_discovery_boundary(self):
-        assert "tools.totvs_rm_mock_tool" in FORK_TOOL_MODULES
-        assert "tools.totvs_rm_real_tool" in FORK_TOOL_MODULES
-        assert "tools.totvs_rm_mock_tool" not in CORE_TOOL_MODULES
-        assert "tools.totvs_rm_real_tool" not in CORE_TOOL_MODULES
-
-    def test_mock_and_real_remain_separate_toolsets(self):
-        assert registry.get_toolset_for_tool("totvs_rm_mock") == "totvs_rm_mock"
-        assert registry.get_toolset_for_tool("totvs_rm_real") == "totvs_rm_real"
-        assert mock_tool_module is not None
-        assert real_tool_module is not None
+    def test_source_name_matches_schema(self):
+        assert SOURCE_NAME == "totvs_rm_real"
 
 
 class TestRealToolOutputContract:
