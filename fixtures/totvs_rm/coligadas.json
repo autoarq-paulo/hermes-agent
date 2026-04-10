@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "codigo": "COL001",
+    "razao_social": "Hermes Servicos Administrativos Ltda",
+    "nome_fantasia": "Hermes Servicos",
+    "ativa": true
+  },
+  {
+    "id": 2,
+    "codigo": "COL002",
+    "razao_social": "Hermes Industria e Comercio S.A.",
+    "nome_fantasia": "Hermes Industria",
+    "ativa": true
+  }
+]
+

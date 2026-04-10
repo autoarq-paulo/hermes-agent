@@ -1,0 +1,41 @@
+[
+  {
+    "id": "MOV-1001",
+    "coligada_id": 1,
+    "coligada_codigo": "COL001",
+    "filial_id": 101,
+    "filial_codigo": "SP01",
+    "chapa": "000123",
+    "tipo": "admissao",
+    "status": "processado",
+    "data": "2025-11-03",
+    "descricao": "Admissao de Ana Souza",
+    "valor": null
+  },
+  {
+    "id": "MOV-1002",
+    "coligada_id": 1,
+    "coligada_codigo": "COL001",
+    "filial_id": 102,
+    "filial_codigo": "RJ01",
+    "chapa": "000456",
+    "tipo": "ferias",
+    "status": "agendado",
+    "data": "2025-12-15",
+    "descricao": "Programacao de ferias",
+    "valor": null
+  },
+  {
+    "id": "MOV-2001",
+    "coligada_id": 2,
+    "coligada_codigo": "COL002",
+    "filial_id": 201,
+    "filial_codigo": "BH01",
+    "chapa": "001001",
+    "tipo": "provento",
+    "status": "confirmado",
+    "data": "2025-12-30",
+    "descricao": "Bonus de produtividade",
+    "valor": 850.0
+  }
+]
