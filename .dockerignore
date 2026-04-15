@@ -13,4 +13,7 @@ node_modules
 # Environment files
 .env
 
+docker/data
+
 *.md
+!README.md
