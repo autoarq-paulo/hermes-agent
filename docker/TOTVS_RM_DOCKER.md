@@ -14,15 +14,23 @@ HERMES_ENABLE_PROJECT_PLUGINS=true
 
 O `docker-compose.yml` da raiz ja sobe o Hermes com essa variavel ativa.
 
-Para o backend Docker do tool `terminal`, o fork agora usa por padrao a imagem
-local construida por este repositorio:
+Para o backend Docker do tool `terminal`, este fork agora usa por padrao uma
+imagem local dedicada para documentos/OCR/dados:
 
 ```text
-hermes-agent-local:rm-adapter
+hermes-agent-local:data-agent
+```
+
+Ela e construida por:
+
+```text
+docker/Dockerfile.data-agent
 ```
 
 Isso evita depender da imagem externa upstream quando o agente abre um sandbox
-Docker para executar comandos. Se quiser trocar o tag local, ajuste:
+Docker para executar comandos e deixa o ambiente pronto para PDF, OCR,
+planilhas, arquivos compactados e conversoes de escritorio. Se quiser trocar o
+tag local, ajuste:
 
 ```text
 TERMINAL_DOCKER_IMAGE
@@ -39,6 +47,15 @@ HERMES_LOCAL_DOCKER_IMAGE
 - codigo da branch atual via `docker build` local
 - estado persistente em `./docker/data`
 - plugin de projeto montado em `./.hermes/plugins`
+
+## O que entra na imagem data-agent
+
+- base completa do Hermes para CLI, gateway, browser e tools
+- stack de documentos: `poppler-utils`, `antiword`, `odt2txt`, `pandoc`
+- stack de OCR: `tesseract-ocr`, `tesseract-ocr-eng`, `tesseract-ocr-por`, `ocrmypdf`
+- stack de dados: `sqlite3`, `miller`, `csvkit`
+- compactacao e inspeção: `p7zip-full`, `zip`, `unzip`, `xz-utils`, `file`, `tree`, `rsync`
+- suite de escritorio headless: `libreoffice-writer`, `libreoffice-calc`, `libreoffice-impress`
 
 Persistencia de banco SQLite:
 
@@ -64,6 +81,12 @@ Build da imagem com suas customizacoes atuais:
 
 ```bash
 docker compose build
+```
+
+Isso gera a imagem:
+
+```text
+hermes-agent-local:data-agent
 ```
 
 Em ambientes com inspeção TLS no gateway, como Sophos XG Home Edition, a imagem usa
@@ -182,3 +205,16 @@ Voce deve ver `totvs_rm_mock` e `totvs_rm_real`.
 Observacao:
 
 - a primeira build pode demorar bastante porque instala dependencias grandes como Node, ffmpeg e o stack usado pelo Playwright
+- a imagem `data-agent` e maior do que uma imagem basica; em troca, reduz muito a necessidade de `apt-get` durante a execucao
+
+## Fallback de runtime
+
+Se surgir um formato muito especifico e voce nao quiser rebuildar na hora, o
+agente ainda pode instalar utilitarios sob demanda dentro do sandbox Docker via
+`terminal`, por exemplo com `apt-get update && apt-get install -y ...`.
+
+Use isso como excecao operacional, nao como baseline:
+
+- rebuild da imagem deixa o ambiente reproduzivel
+- install em runtime e mais lento
+- install em runtime depende de rede e pode falhar em ambientes mais fechados

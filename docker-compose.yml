@@ -1,0 +1,38 @@
+services:
+  hermes-cli:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.data-agent
+    image: hermes-agent-local:data-agent
+    container_name: hermes-cli
+    working_dir: /opt/hermes
+    environment:
+      HERMES_HOME: /opt/data
+      HERMES_ENABLE_PROJECT_PLUGINS: "true"
+      HERMES_LOCAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+      TERMINAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+    volumes:
+      - ./docker/data:/opt/data
+      - ./.hermes/plugins:/opt/hermes/.hermes/plugins
+    stdin_open: true
+    tty: true
+    profiles: ["cli"]
+
+  hermes-gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.data-agent
+    image: hermes-agent-local:data-agent
+    container_name: hermes-gateway
+    working_dir: /opt/hermes
+    command: ["gateway", "run"]
+    environment:
+      HERMES_HOME: /opt/data
+      HERMES_ENABLE_PROJECT_PLUGINS: "true"
+      HERMES_LOCAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+      TERMINAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+    volumes:
+      - ./docker/data:/opt/data
+      - ./.hermes/plugins:/opt/hermes/.hermes/plugins
+    restart: unless-stopped
+    profiles: ["gateway"]
