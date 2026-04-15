@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
 
+from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE
 from tools.tool_backend_helpers import managed_nous_tools_enabled as _managed_nous_tools_enabled
 
 _IS_WINDOWS = platform.system() == "Windows"
@@ -355,7 +356,7 @@ DEFAULT_CONFIG = {
         # (terminal and execute_code).  Skill-declared required_environment_variables
         # are passed through automatically; this list is for non-skill use cases.
         "env_passthrough": [],
-        "docker_image": "nikolaik/python-nodejs:python3.11-nodejs20",
+        "docker_image": DEFAULT_TERMINAL_DOCKER_IMAGE,
         "docker_forward_env": [],
         # Explicit environment variables to set inside Docker containers.
         # Unlike docker_forward_env (which reads values from the host process),
@@ -3012,7 +3013,7 @@ def show_config():
     print(f"  Timeout:      {terminal.get('timeout', 60)}s")
     
     if terminal.get('backend') == 'docker':
-        print(f"  Docker image: {terminal.get('docker_image', 'nikolaik/python-nodejs:python3.11-nodejs20')}")
+        print(f"  Docker image: {terminal.get('docker_image', DEFAULT_TERMINAL_DOCKER_IMAGE)}")
     elif terminal.get('backend') == 'singularity':
         print(f"  Image:        {terminal.get('singularity_image', 'docker://nikolaik/python-nodejs:python3.11-nodejs20')}")
     elif terminal.get('backend') == 'modal':

@@ -25,7 +25,7 @@ from hermes_cli.nous_subscription import (
     get_nous_subscription_features,
 )
 from tools.tool_backend_helpers import managed_nous_tools_enabled
-from hermes_constants import get_optional_skills_dir
+from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE, get_optional_skills_dir
 
 logger = logging.getLogger(__name__)
 
@@ -1146,7 +1146,7 @@ def setup_terminal_backend(config: dict):
 
         # Docker image
         current_image = config.get("terminal", {}).get(
-            "docker_image", "nikolaik/python-nodejs:python3.11-nodejs20"
+            "docker_image", DEFAULT_TERMINAL_DOCKER_IMAGE
         )
         image = prompt("  Docker image", current_image)
         config["terminal"]["docker_image"] = image

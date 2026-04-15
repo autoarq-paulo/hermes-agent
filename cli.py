@@ -28,6 +28,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
+from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE
+
 logger = logging.getLogger(__name__)
 
 # Suppress startup messages for clean CLI experience
@@ -222,7 +224,7 @@ def load_cli_config() -> Dict[str, Any]:
             "cwd": ".",  # "." is resolved to os.getcwd() at runtime
             "timeout": 60,
             "lifetime_seconds": 300,
-            "docker_image": "nikolaik/python-nodejs:python3.11-nodejs20",
+            "docker_image": DEFAULT_TERMINAL_DOCKER_IMAGE,
             "docker_forward_env": [],
             "singularity_image": "docker://nikolaik/python-nodejs:python3.11-nodejs20",
             "modal_image": "nikolaik/python-nodejs:python3.11-nodejs20",

@@ -8,6 +8,16 @@ import os
 from pathlib import Path
 
 
+# Local default for the Docker terminal backend.
+# Forks can override this via HERMES_LOCAL_DOCKER_IMAGE, but the fallback points
+# at the image built by this repository's docker-compose flow so Docker sessions
+# do not silently depend on an unrelated upstream image.
+DEFAULT_TERMINAL_DOCKER_IMAGE = os.getenv(
+    "HERMES_LOCAL_DOCKER_IMAGE",
+    "hermes-agent-local:rm-adapter",
+)
+
+
 def get_hermes_home() -> Path:
     """Return the Hermes home directory (default: ~/.hermes).
 

@@ -166,7 +166,7 @@ terminal:
 #   cwd: "/workspace"  # Path INSIDE the container (default: /)
 #   timeout: 180
 #   lifetime_seconds: 300
-#   docker_image: "nikolaik/python-nodejs:python3.11-nodejs20"
+#   docker_image: "hermes-agent-local:rm-adapter"
 #   docker_mount_cwd_to_workspace: true   # Explicit opt-in: mount your launch cwd into /workspace
 #   # Optional: explicitly forward selected env vars into Docker.
 #   # These values come from your current shell first, then ~/.hermes/.env.
