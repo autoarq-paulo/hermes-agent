@@ -33,7 +33,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     printf 'Acquire::https::Verify-Peer "false";\nAcquire::https::Verify-Host "false";\n' > /etc/apt/apt.conf.d/99bootstrap-insecure && \
     apt-get -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false update && \
     apt-get -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false install -y --no-install-recommends \
-        ca-certificates build-essential nodejs npm python3 ripgrep ffmpeg gcc python3-dev libffi-dev procps git && \
+        ca-certificates build-essential nodejs npm python3 ripgrep ffmpeg gcc python3-dev libffi-dev procps git \
+        curl wget unzip xz-utils jq file less && \
     install -Dm644 /tmp/sophos-xg-home.crt /usr/local/share/ca-certificates/sophos-xg-home.crt && \
     update-ca-certificates && \
     rm -f /etc/apt/apt.conf.d/99bootstrap-insecure /tmp/sophos-xg-home.crt && \
