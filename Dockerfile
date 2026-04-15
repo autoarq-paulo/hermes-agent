@@ -34,7 +34,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false update && \
     apt-get -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false install -y --no-install-recommends \
         ca-certificates build-essential nodejs npm python3 ripgrep ffmpeg gcc python3-dev libffi-dev procps git \
-        curl wget unzip xz-utils jq file less && \
+        curl wget unzip xz-utils jq file less \
+        poppler-utils sqlite3 p7zip-full \
+        tesseract-ocr tesseract-ocr-eng tesseract-ocr-por && \
     install -Dm644 /tmp/sophos-xg-home.crt /usr/local/share/ca-certificates/sophos-xg-home.crt && \
     update-ca-certificates && \
     rm -f /etc/apt/apt.conf.d/99bootstrap-insecure /tmp/sophos-xg-home.crt && \
