@@ -26,6 +26,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional
 
 from toolsets import TOOLSETS
+from agent.prompt_builder import DEFAULT_LANGUAGE_GUIDANCE
 
 
 # Tools that children must never have access to
@@ -96,6 +97,7 @@ def _build_child_system_prompt(
     """Build a focused system prompt for a child agent."""
     parts = [
         "You are a focused subagent working on a specific delegated task.",
+        DEFAULT_LANGUAGE_GUIDANCE,
         "",
         f"YOUR TASK:\n{goal}",
     ]

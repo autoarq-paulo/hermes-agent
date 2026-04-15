@@ -141,6 +141,13 @@ DEFAULT_AGENT_IDENTITY = (
     "Be targeted and efficient in your exploration and investigations."
 )
 
+DEFAULT_LANGUAGE_GUIDANCE = (
+    "You MUST communicate with the user in Brazilian Portuguese (pt-BR) for all "
+    "user-visible text, including answers, progress updates, plans, status "
+    "messages, delegation summaries, and clarification questions. Only switch to "
+    "another language when the user explicitly asks for it."
+)
+
 MEMORY_GUIDANCE = (
     "You have persistent memory across sessions. Save durable facts using the memory "
     "tool: user preferences, environment details, tool quirks, and stable conventions. "

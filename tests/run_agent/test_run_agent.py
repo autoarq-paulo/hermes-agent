@@ -647,6 +647,13 @@ class TestBuildSystemPrompt:
         prompt = agent._build_system_prompt()
         assert DEFAULT_AGENT_IDENTITY in prompt
 
+    def test_includes_default_language_guidance(self, agent):
+        from agent.prompt_builder import DEFAULT_LANGUAGE_GUIDANCE
+
+        prompt = agent._build_system_prompt()
+        assert DEFAULT_LANGUAGE_GUIDANCE in prompt
+        assert "Brazilian Portuguese (pt-BR)" in prompt
+
     def test_includes_system_message(self, agent):
         prompt = agent._build_system_prompt(system_message="Custom instruction")
         assert "Custom instruction" in prompt
