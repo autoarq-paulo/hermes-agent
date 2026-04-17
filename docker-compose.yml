@@ -1,8 +1,13 @@
 services:
   hermes-cli:
+    init: true
     build:
       context: .
       dockerfile: docker/Dockerfile.data-agent
+      # Compatibility alias for older local scripts that still reference the
+      # pre-data-agent image name; data-agent remains the canonical tag.
+      tags:
+        - hermes-agent-local:rm-adapter
     image: hermes-agent-local:data-agent
     container_name: hermes-cli
     working_dir: /opt/hermes
@@ -19,9 +24,14 @@ services:
     profiles: ["cli"]
 
   hermes-gateway:
+    init: true
     build:
       context: .
       dockerfile: docker/Dockerfile.data-agent
+      # Compatibility alias for older local scripts that still reference the
+      # pre-data-agent image name; data-agent remains the canonical tag.
+      tags:
+        - hermes-agent-local:rm-adapter
     image: hermes-agent-local:data-agent
     container_name: hermes-gateway
     working_dir: /opt/hermes
@@ -35,4 +45,35 @@ services:
       - ./docker/data:/opt/data
       - ./.hermes/plugins:/opt/hermes/.hermes/plugins
     restart: unless-stopped
-    profiles: ["gateway"]
+    profiles: ["gateway", "dashboard"]
+
+  hermes-dashboard:
+    init: true
+    depends_on:
+      - hermes-gateway
+    pid: "service:hermes-gateway"
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.data-agent
+      # Compatibility alias for older local scripts that still reference the
+      # pre-data-agent image name; data-agent remains the canonical tag.
+      tags:
+        - hermes-agent-local:rm-adapter
+    image: hermes-agent-local:data-agent
+    container_name: hermes-dashboard
+    working_dir: /opt/hermes
+    # Docker needs 0.0.0.0 inside the container; --insecure is scoped by
+    # publishing the port only on host localhost below, not as a public endpoint.
+    command: ["dashboard", "--host", "0.0.0.0", "--port", "9119", "--no-open", "--insecure"]
+    environment:
+      HERMES_HOME: /opt/data
+      HERMES_ENABLE_PROJECT_PLUGINS: "true"
+      HERMES_LOCAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+      TERMINAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+    volumes:
+      - ./docker/data:/opt/data
+      - ./.hermes/plugins:/opt/hermes/.hermes/plugins
+    ports:
+      - "127.0.0.1:9119:9119"
+    restart: unless-stopped
+    profiles: ["dashboard"]

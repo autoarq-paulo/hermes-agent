@@ -14,7 +14,7 @@ from pathlib import Path
 # do not silently depend on an unrelated upstream image.
 DEFAULT_TERMINAL_DOCKER_IMAGE = os.getenv(
     "HERMES_LOCAL_DOCKER_IMAGE",
-    "hermes-agent-local:rm-adapter",
+    "hermes-agent-local:data-agent",
 )
 
 

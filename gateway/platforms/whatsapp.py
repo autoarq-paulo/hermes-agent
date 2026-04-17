@@ -146,6 +146,7 @@ class WhatsAppAdapter(BasePlatformAdapter):
         self._bridge_log: Optional[Path] = None
         self._poll_task: Optional[asyncio.Task] = None
         self._http_session: Optional["aiohttp.ClientSession"] = None
+        self._bridge_shutdown_expected = False
 
     def _whatsapp_require_mention(self) -> bool:
         configured = self.config.extra.get("require_mention")
@@ -375,6 +376,7 @@ class WhatsAppAdapter(BasePlatformAdapter):
                 preexec_fn=None if _IS_WINDOWS else os.setsid,
                 env=bridge_env,
             )
+            self._bridge_shutdown_expected = False
             
             # Wait for the bridge to connect to WhatsApp.
             # Phase 1: wait for the HTTP server to come up (up to 15s).
@@ -475,6 +477,10 @@ class WhatsAppAdapter(BasePlatformAdapter):
         if returncode is None:
             return None
 
+        if self._bridge_shutdown_expected:
+            logger.info("[%s] WhatsApp bridge exited during expected shutdown (code %s).", self.name, returncode)
+            return None
+
         message = f"WhatsApp bridge process exited unexpectedly (code {returncode})."
         if not self.has_fatal_error:
             logger.error("[%s] %s", self.name, message)
@@ -485,10 +491,24 @@ class WhatsAppAdapter(BasePlatformAdapter):
 
     async def disconnect(self) -> None:
         """Stop the WhatsApp bridge and clean up any orphaned processes."""
+        self._bridge_shutdown_expected = True
+
+        # Stop polling before terminating the managed bridge. Otherwise the
+        # poll loop can observe the SIGTERM we are intentionally sending and
+        # briefly report it as an adapter crash during normal shutdown.
+        if self._poll_task and not self._poll_task.done():
+            self._poll_task.cancel()
+            try:
+                await self._poll_task
+            except (asyncio.CancelledError, Exception):
+                pass
+        self._poll_task = None
+
         if self._bridge_process:
             try:
                 # Kill the entire process group so child node processes die too
                 import signal
+                import subprocess as _subprocess
                 try:
                     if _IS_WINDOWS:
                         self._bridge_process.terminate()
@@ -496,7 +516,10 @@ class WhatsAppAdapter(BasePlatformAdapter):
                         os.killpg(os.getpgid(self._bridge_process.pid), signal.SIGTERM)
                 except (ProcessLookupError, PermissionError):
                     self._bridge_process.terminate()
-                await asyncio.sleep(1)
+                try:
+                    await asyncio.to_thread(self._bridge_process.wait, timeout=5)
+                except _subprocess.TimeoutExpired:
+                    pass
                 if self._bridge_process.poll() is None:
                     try:
                         if _IS_WINDOWS:
@@ -505,20 +528,15 @@ class WhatsAppAdapter(BasePlatformAdapter):
                             os.killpg(os.getpgid(self._bridge_process.pid), signal.SIGKILL)
                     except (ProcessLookupError, PermissionError):
                         self._bridge_process.kill()
+                    try:
+                        await asyncio.to_thread(self._bridge_process.wait, timeout=5)
+                    except _subprocess.TimeoutExpired:
+                        logger.warning("[%s] WhatsApp bridge did not exit after SIGKILL.", self.name)
             except Exception as e:
                 print(f"[{self.name}] Error stopping bridge: {e}")
         else:
             # Bridge was not started by us, don't kill it
             print(f"[{self.name}] Disconnecting (external bridge left running)")
-
-        # Cancel the poll task explicitly
-        if self._poll_task and not self._poll_task.done():
-            self._poll_task.cancel()
-            try:
-                await self._poll_task
-            except (asyncio.CancelledError, Exception):
-                pass
-        self._poll_task = None
 
         # Close the persistent HTTP session
         if self._http_session and not self._http_session.closed:
@@ -529,6 +547,7 @@ class WhatsAppAdapter(BasePlatformAdapter):
 
         self._mark_disconnected()
         self._bridge_process = None
+        self._bridge_shutdown_expected = False
         self._close_bridge_log()
         print(f"[{self.name}] Disconnected")
     
