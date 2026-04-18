@@ -25,7 +25,12 @@ from hermes_cli.nous_subscription import (
     get_nous_subscription_features,
 )
 from tools.tool_backend_helpers import managed_nous_tools_enabled
-from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE, get_optional_skills_dir
+from hermes_constants import (
+    get_default_terminal_daytona_image,
+    get_default_terminal_docker_image,
+    get_default_terminal_singularity_image,
+    get_optional_skills_dir,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1146,7 +1151,7 @@ def setup_terminal_backend(config: dict):
 
         # Docker image
         current_image = config.get("terminal", {}).get(
-            "docker_image", DEFAULT_TERMINAL_DOCKER_IMAGE
+            "docker_image", get_default_terminal_docker_image()
         )
         image = prompt("  Docker image", current_image)
         config["terminal"]["docker_image"] = image
@@ -1168,7 +1173,7 @@ def setup_terminal_backend(config: dict):
             print_info(f"Found: {sing_bin}")
 
         current_image = config.get("terminal", {}).get(
-            "singularity_image", "docker://nikolaik/python-nodejs:python3.11-nodejs20"
+            "singularity_image", get_default_terminal_singularity_image()
         )
         image = prompt("  Container image", current_image)
         config["terminal"]["singularity_image"] = image
@@ -1326,7 +1331,7 @@ def setup_terminal_backend(config: dict):
 
         # Daytona image
         current_image = config.get("terminal", {}).get(
-            "daytona_image", "nikolaik/python-nodejs:python3.11-nodejs20"
+            "daytona_image", get_default_terminal_daytona_image()
         )
         image = prompt("  Sandbox image", current_image)
         config["terminal"]["daytona_image"] = image

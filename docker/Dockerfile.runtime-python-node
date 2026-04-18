@@ -1,0 +1,64 @@
+# syntax=docker/dockerfile:1.7
+
+# Project-owned terminal runtime for Hermes sandbox backends.
+# Base images are official Docker Library images. Pin digests during release
+# promotion; tags stay here to keep local rebuilds and upstream merges simple.
+FROM node:20-bookworm-slim AS node_source
+FROM python:3.11-slim-bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    NPM_CONFIG_AUDIT=false \
+    NPM_CONFIG_FUND=false
+
+ENV HTTP_PROXY= \
+    HTTPS_PROXY= \
+    http_proxy= \
+    https_proxy= \
+    NO_PROXY= \
+    no_proxy=
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    printf 'Acquire::http::Proxy "false";\nAcquire::https::Proxy "false";\n' > /etc/apt/apt.conf.d/99no-proxy && \
+    sed -i 's|http://deb.debian.org/debian|https://deb.debian.org/debian|g' /etc/apt/sources.list.d/*.sources && \
+    apt-get -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false update && \
+    apt-get -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false install -y --no-install-recommends \
+        bash \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+        jq \
+        less \
+        procps \
+        ripgrep \
+        tini \
+        unzip \
+        wget \
+        xz-utils \
+        zip && \
+    apt-get purge -y --auto-remove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=node_source /usr/local/bin/node /usr/local/bin/node
+COPY --from=node_source /usr/local/lib/node_modules /usr/local/lib/node_modules
+
+RUN ln -sf ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -sf ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx && \
+    ln -sf ../lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack && \
+    npm cache clean --force && \
+    python --version && \
+    node --version && \
+    npm --version
+
+WORKDIR /root
+
+# Keep root as the default user for compatibility with Hermes' existing Docker
+# backend, which mounts /root and allows agents to install apt/pip/npm packages
+# inside the already capability-restricted sandbox. Revisit if DockerEnvironment
+# gains first-class non-root home/workspace support.
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["bash"]

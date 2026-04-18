@@ -17,7 +17,11 @@ from hermes_cli.config import get_env_path, get_env_value, get_hermes_home, load
 from hermes_cli.models import provider_label
 from hermes_cli.nous_subscription import get_nous_subscription_features
 from hermes_cli.runtime_provider import resolve_requested_provider
-from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE, OPENROUTER_MODELS_URL
+from hermes_constants import (
+    get_default_terminal_daytona_image,
+    get_default_terminal_docker_image,
+    OPENROUTER_MODELS_URL,
+)
 from tools.tool_backend_helpers import managed_nous_tools_enabled
 
 def check_mark(ok: bool) -> str:
@@ -276,10 +280,10 @@ def show_status(args):
         print(f"  SSH Host:     {ssh_host or '(not set)'}")
         print(f"  SSH User:     {ssh_user or '(not set)'}")
     elif terminal_env == "docker":
-        docker_image = os.getenv("TERMINAL_DOCKER_IMAGE", DEFAULT_TERMINAL_DOCKER_IMAGE)
+        docker_image = os.getenv("TERMINAL_DOCKER_IMAGE", get_default_terminal_docker_image())
         print(f"  Docker Image: {docker_image}")
     elif terminal_env == "daytona":
-        daytona_image = os.getenv("TERMINAL_DAYTONA_IMAGE", "nikolaik/python-nodejs:python3.11-nodejs20")
+        daytona_image = os.getenv("TERMINAL_DAYTONA_IMAGE", get_default_terminal_daytona_image())
         print(f"  Daytona Image: {daytona_image}")
     
     sudo_password = os.getenv("SUDO_PASSWORD", "")

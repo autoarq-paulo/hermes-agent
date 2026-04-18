@@ -14,25 +14,35 @@ HERMES_ENABLE_PROJECT_PLUGINS=true
 
 O `docker-compose.yml` da raiz ja sobe o Hermes com essa variavel ativa.
 
-Para o backend Docker do tool `terminal`, este fork agora usa por padrao uma
-imagem local dedicada para documentos/OCR/dados:
+Para o backend Docker do tool `terminal`, este fork usa uma imagem dedicada ao
+runtime minimo Python 3.11 + Node.js 20. Em ambientes compartilhados, o padrao
+publicado e:
 
 ```text
-hermes-agent-local:data-agent
+ghcr.io/autoarq-paulo/hermes-agent-runtime:python3.11-node20
+```
+
+No Docker Compose local deste fork, a imagem e sobrescrita para a tag local:
+
+```text
+hermes-agent-local:runtime-python3.11-node20
 ```
 
 Ela e construida por:
 
 ```text
-docker/Dockerfile.data-agent
+docker/Dockerfile.runtime-python-node
 ```
 
 Isso evita depender da imagem externa upstream quando o agente abre um sandbox
-Docker para executar comandos e deixa o ambiente pronto para PDF, OCR,
-planilhas, arquivos compactados e conversoes de escritorio. Se quiser trocar o
-tag local, ajuste:
+Docker para executar comandos. A imagem `data-agent` continua sendo a imagem do
+proprio servico Hermes no `docker-compose.yml`; o runtime de terminal fica
+separado para reduzir superficie e facilitar auditoria. Para ambiente
+controlado, prefira configurar `HERMES_TERMINAL_RUNTIME_DIGEST`. Se quiser
+trocar o tag local, ajuste:
 
 ```text
+HERMES_TERMINAL_RUNTIME_IMAGE
 TERMINAL_DOCKER_IMAGE
 ```
 
@@ -80,12 +90,13 @@ mkdir -p docker/data
 Build da imagem com suas customizacoes atuais:
 
 ```bash
-docker compose build
+docker compose build hermes-runtime hermes-cli
 ```
 
-Isso gera a imagem:
+Isso gera as imagens:
 
 ```text
+hermes-agent-local:runtime-python3.11-node20
 hermes-agent-local:data-agent
 ```
 
@@ -218,3 +229,17 @@ Use isso como excecao operacional, nao como baseline:
 - rebuild da imagem deixa o ambiente reproduzivel
 - install em runtime e mais lento
 - install em runtime depende de rede e pode falhar em ambientes mais fechados
+
+## Governanca de imagens
+
+A politica do runtime de terminal esta em:
+
+```text
+docs/governanca/runtime_container_policy.md
+```
+
+Antes de trocar imagens ou publicar uma nova tag, rode:
+
+```bash
+python scripts/check_container_image_policy.py
+```

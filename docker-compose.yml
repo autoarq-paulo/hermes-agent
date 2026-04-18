@@ -14,8 +14,7 @@ services:
     environment:
       HERMES_HOME: /opt/data
       HERMES_ENABLE_PROJECT_PLUGINS: "true"
-      HERMES_LOCAL_DOCKER_IMAGE: hermes-agent-local:data-agent
-      TERMINAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+      HERMES_TERMINAL_RUNTIME_IMAGE: hermes-agent-local:runtime-python3.11-node20
     volumes:
       - ./docker/data:/opt/data
       - ./.hermes/plugins:/opt/hermes/.hermes/plugins
@@ -39,8 +38,7 @@ services:
     environment:
       HERMES_HOME: /opt/data
       HERMES_ENABLE_PROJECT_PLUGINS: "true"
-      HERMES_LOCAL_DOCKER_IMAGE: hermes-agent-local:data-agent
-      TERMINAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+      HERMES_TERMINAL_RUNTIME_IMAGE: hermes-agent-local:runtime-python3.11-node20
     volumes:
       - ./docker/data:/opt/data
       - ./.hermes/plugins:/opt/hermes/.hermes/plugins
@@ -68,8 +66,7 @@ services:
     environment:
       HERMES_HOME: /opt/data
       HERMES_ENABLE_PROJECT_PLUGINS: "true"
-      HERMES_LOCAL_DOCKER_IMAGE: hermes-agent-local:data-agent
-      TERMINAL_DOCKER_IMAGE: hermes-agent-local:data-agent
+      HERMES_TERMINAL_RUNTIME_IMAGE: hermes-agent-local:runtime-python3.11-node20
     volumes:
       - ./docker/data:/opt/data
       - ./.hermes/plugins:/opt/hermes/.hermes/plugins
@@ -77,3 +74,11 @@ services:
       - "127.0.0.1:9119:9119"
     restart: unless-stopped
     profiles: ["dashboard"]
+
+  hermes-runtime:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.runtime-python-node
+    image: hermes-agent-local:runtime-python3.11-node20
+    command: ["true"]
+    profiles: ["runtime"]

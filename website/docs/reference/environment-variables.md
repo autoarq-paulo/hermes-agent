@@ -115,7 +115,11 @@ For native Anthropic auth, Hermes prefers Claude Code's own credential files whe
 | Variable | Description |
 |----------|-------------|
 | `TERMINAL_ENV` | Backend: `local`, `docker`, `ssh`, `singularity`, `modal`, `daytona` |
-| `TERMINAL_DOCKER_IMAGE` | Docker image (default: `nikolaik/python-nodejs:python3.11-nodejs20`) |
+| `HERMES_TERMINAL_RUNTIME_REPOSITORY` | Opt-in published runtime image repository, for example `ghcr.io/autoarq-paulo/hermes-agent-runtime` |
+| `HERMES_TERMINAL_RUNTIME_TAG` | Published runtime image tag when repository is set (default tag: `python3.11-node20`) |
+| `HERMES_TERMINAL_RUNTIME_DIGEST` | Optional immutable digest appended to the published runtime image when repository is set |
+| `HERMES_TERMINAL_RUNTIME_IMAGE` | Full runtime image override; default local runtime is `hermes-agent-local:runtime-python3.11-node20` |
+| `TERMINAL_DOCKER_IMAGE` | Docker image (default: local Hermes runtime image unless a registry runtime is configured) |
 | `TERMINAL_DOCKER_FORWARD_ENV` | JSON array of env var names to explicitly forward into Docker terminal sessions. Note: skill-declared `required_environment_variables` are forwarded automatically — you only need this for vars not declared by any skill. |
 | `TERMINAL_DOCKER_VOLUMES` | Additional Docker volume mounts (comma-separated `host:container` pairs) |
 | `TERMINAL_DOCKER_MOUNT_CWD_TO_WORKSPACE` | Advanced opt-in: mount the launch cwd into Docker `/workspace` (`true`/`false`, default: `false`) |

@@ -166,7 +166,7 @@ terminal:
 #   cwd: "/workspace"  # Path INSIDE the container (default: /)
 #   timeout: 180
 #   lifetime_seconds: 300
-#   docker_image: "hermes-agent-local:data-agent"
+#   docker_image: "hermes-agent-local:runtime-python3.11-node20"
 #   docker_mount_cwd_to_workspace: true   # Explicit opt-in: mount your launch cwd into /workspace
 #   # Optional: explicitly forward selected env vars into Docker.
 #   # These values come from your current shell first, then ~/.hermes/.env.
@@ -185,7 +185,7 @@ terminal:
 #   cwd: "/workspace"  # Path INSIDE the container (default: /root)
 #   timeout: 180
 #   lifetime_seconds: 300
-#   singularity_image: "docker://nikolaik/python-nodejs:python3.11-nodejs20"
+#   singularity_image: "docker://hermes-agent-local:runtime-python3.11-node20"
 
 # -----------------------------------------------------------------------------
 # OPTION 5: Modal cloud execution
@@ -197,7 +197,7 @@ terminal:
 #   cwd: "/workspace"  # Path INSIDE the sandbox (default: /root)
 #   timeout: 180
 #   lifetime_seconds: 300
-#   modal_image: "nikolaik/python-nodejs:python3.11-nodejs20"
+#   modal_image: "ghcr.io/autoarq-paulo/hermes-agent-runtime:python3.11-node20"  # Opt-in after GHCR publication
 
 # -----------------------------------------------------------------------------
 # OPTION 6: Daytona cloud execution
@@ -210,7 +210,7 @@ terminal:
 #   cwd: "~"
 #   timeout: 180
 #   lifetime_seconds: 300
-#   daytona_image: "nikolaik/python-nodejs:python3.11-nodejs20"
+#   daytona_image: "ghcr.io/autoarq-paulo/hermes-agent-runtime:python3.11-node20"  # Opt-in after GHCR publication
 #   container_disk: 10240          # Daytona max is 10GB per sandbox
 
 #

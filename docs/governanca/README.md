@@ -24,6 +24,7 @@ Este diretorio concentra a governanca leve do fork.
 - Guardrails: define regras obrigatorias e limites de alteracao.
 - Padroes de extensao: explica como adicionar capacidade sem acoplar ao core.
 - Fluxo de atualizacao upstream: define a rotina operacional de sincronizacao com a origem e o roteiro rapido de manutencao semanal.
+- Politica de imagem de runtime: define requisitos, aprovacao e guardrails para imagens usadas por terminal/sandbox.
 - ADRs: registram decisoes arquiteturais com contexto, decisao e consequencias.
 
 ## Regras basicas do fork
@@ -47,6 +48,12 @@ Este diretorio concentra a governanca leve do fork.
 - [adr/ADR-003-integracao-rm-desacoplada.md](./adr/ADR-003-integracao-rm-desacoplada.md)
 - [adr/ADR-004-ambiente-local-wsl2-docker.md](./adr/ADR-004-ambiente-local-wsl2-docker.md)
 - [adr/ADR-005-extensoes-via-plugin-de-projeto.md](./adr/ADR-005-extensoes-via-plugin-de-projeto.md)
+- [adr/ADR-006-runtime-container-supply-chain.md](./adr/ADR-006-runtime-container-supply-chain.md)
+- [adr/ADR-007-publicacao-runtime-ghcr.md](./adr/ADR-007-publicacao-runtime-ghcr.md)
+- [runtime_container_policy.md](./runtime_container_policy.md)
+- [runtime_container_publication.md](./runtime_container_publication.md)
+- [runtime_container_validation_checklist.md](./runtime_container_validation_checklist.md)
+- [runtime_container_rollback.md](./runtime_container_rollback.md)
 - [ativacao_plugins_projeto.md](./ativacao_plugins_projeto.md)
 
 ## Termos usados

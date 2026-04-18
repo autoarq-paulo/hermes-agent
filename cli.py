@@ -28,7 +28,12 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE
+from hermes_constants import (
+    get_default_terminal_daytona_image,
+    get_default_terminal_docker_image,
+    get_default_terminal_modal_image,
+    get_default_terminal_singularity_image,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -224,11 +229,11 @@ def load_cli_config() -> Dict[str, Any]:
             "cwd": ".",  # "." is resolved to os.getcwd() at runtime
             "timeout": 60,
             "lifetime_seconds": 300,
-            "docker_image": DEFAULT_TERMINAL_DOCKER_IMAGE,
+            "docker_image": get_default_terminal_docker_image(),
             "docker_forward_env": [],
-            "singularity_image": "docker://nikolaik/python-nodejs:python3.11-nodejs20",
-            "modal_image": "nikolaik/python-nodejs:python3.11-nodejs20",
-            "daytona_image": "nikolaik/python-nodejs:python3.11-nodejs20",
+            "singularity_image": get_default_terminal_singularity_image(),
+            "modal_image": get_default_terminal_modal_image(),
+            "daytona_image": get_default_terminal_daytona_image(),
             "docker_volumes": [],  # host:container volume mounts for Docker backend
             "docker_mount_cwd_to_workspace": False,  # explicit opt-in only; default off for sandbox isolation
         },

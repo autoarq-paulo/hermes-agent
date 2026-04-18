@@ -37,6 +37,11 @@ jobs:
           source .venv/bin/activate
           uv pip install -e ".[all,dev]"
 
+      - name: Check container image policy
+        run: |
+          source .venv/bin/activate
+          python scripts/check_container_image_policy.py
+
       - name: Run tests
         run: |
           source .venv/bin/activate

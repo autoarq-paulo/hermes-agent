@@ -44,7 +44,12 @@ import subprocess
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 
-from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE
+from hermes_constants import (
+    get_default_terminal_daytona_image,
+    get_default_terminal_docker_image,
+    get_default_terminal_modal_image,
+    get_default_terminal_singularity_image,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -600,7 +605,7 @@ def _get_env_config() -> Dict[str, Any]:
     """Get terminal environment configuration from environment variables."""
     # Default to the image built from this repository so forked deployments do
     # not depend on an external upstream runtime unless explicitly configured.
-    default_image = DEFAULT_TERMINAL_DOCKER_IMAGE
+    default_image = get_default_terminal_docker_image()
     env_type = os.getenv("TERMINAL_ENV", "local")
     
     mount_docker_cwd = os.getenv("TERMINAL_DOCKER_MOUNT_CWD_TO_WORKSPACE", "false").lower() in ("true", "1", "yes")
@@ -646,9 +651,9 @@ def _get_env_config() -> Dict[str, Any]:
         "modal_mode": coerce_modal_mode(os.getenv("TERMINAL_MODAL_MODE", "auto")),
         "docker_image": os.getenv("TERMINAL_DOCKER_IMAGE", default_image),
         "docker_forward_env": _parse_env_var("TERMINAL_DOCKER_FORWARD_ENV", "[]", json.loads, "valid JSON"),
-        "singularity_image": os.getenv("TERMINAL_SINGULARITY_IMAGE", f"docker://{default_image}"),
-        "modal_image": os.getenv("TERMINAL_MODAL_IMAGE", default_image),
-        "daytona_image": os.getenv("TERMINAL_DAYTONA_IMAGE", default_image),
+        "singularity_image": os.getenv("TERMINAL_SINGULARITY_IMAGE", get_default_terminal_singularity_image()),
+        "modal_image": os.getenv("TERMINAL_MODAL_IMAGE", get_default_terminal_modal_image()),
+        "daytona_image": os.getenv("TERMINAL_DAYTONA_IMAGE", get_default_terminal_daytona_image()),
         "cwd": cwd,
         "host_cwd": host_cwd,
         "docker_mount_cwd_to_workspace": mount_docker_cwd,
@@ -1665,12 +1670,12 @@ if __name__ == "__main__":
     print("  result = terminal_tool(command='python server.py', background=True)")
 
     print("\nEnvironment Variables:")
-    default_img = DEFAULT_TERMINAL_DOCKER_IMAGE
+    default_img = get_default_terminal_docker_image()
     print(f"  TERMINAL_ENV: {os.getenv('TERMINAL_ENV', 'local')} (local/docker/singularity/modal/daytona/ssh)")
     print(f"  TERMINAL_DOCKER_IMAGE: {os.getenv('TERMINAL_DOCKER_IMAGE', default_img)}")
-    print(f"  TERMINAL_SINGULARITY_IMAGE: {os.getenv('TERMINAL_SINGULARITY_IMAGE', f'docker://{default_img}')}")
-    print(f"  TERMINAL_MODAL_IMAGE: {os.getenv('TERMINAL_MODAL_IMAGE', default_img)}")
-    print(f"  TERMINAL_DAYTONA_IMAGE: {os.getenv('TERMINAL_DAYTONA_IMAGE', default_img)}")
+    print(f"  TERMINAL_SINGULARITY_IMAGE: {os.getenv('TERMINAL_SINGULARITY_IMAGE', get_default_terminal_singularity_image())}")
+    print(f"  TERMINAL_MODAL_IMAGE: {os.getenv('TERMINAL_MODAL_IMAGE', get_default_terminal_modal_image())}")
+    print(f"  TERMINAL_DAYTONA_IMAGE: {os.getenv('TERMINAL_DAYTONA_IMAGE', get_default_terminal_daytona_image())}")
     print(f"  TERMINAL_CWD: {os.getenv('TERMINAL_CWD', os.getcwd())}")
     from hermes_constants import display_hermes_home as _dhh
     print(f"  TERMINAL_SANDBOX_DIR: {os.getenv('TERMINAL_SANDBOX_DIR', f'{_dhh()}/sandboxes')}")

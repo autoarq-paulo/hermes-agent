@@ -8,14 +8,81 @@ import os
 from pathlib import Path
 
 
-# Local default for the Docker terminal backend.
-# Forks can override this via HERMES_LOCAL_DOCKER_IMAGE, but the fallback points
-# at the image built by this repository's docker-compose flow so Docker sessions
-# do not silently depend on an unrelated upstream image.
-DEFAULT_TERMINAL_DOCKER_IMAGE = os.getenv(
-    "HERMES_LOCAL_DOCKER_IMAGE",
-    "hermes-agent-local:data-agent",
-)
+# Project-owned default for terminal container backends.
+#
+# The resolver functions below intentionally read os.environ at call time. The
+# CLI loads ~/.hermes/.env after some modules import hermes_constants, so
+# import-time image constants would freeze stale values and make documented
+# HERMES_TERMINAL_RUNTIME_* overrides unreliable.
+#
+# GHCR is opt-in until the first publication, visibility, and digest are
+# validated. Local development defaults to the project-built image; controlled
+# environments should set HERMES_TERMINAL_RUNTIME_REPOSITORY/TAG/DIGEST or a
+# full HERMES_TERMINAL_RUNTIME_IMAGE once the registry image is available.
+DEFAULT_LOCAL_TERMINAL_RUNTIME_IMAGE = "hermes-agent-local:runtime-python3.11-node20"
+DEFAULT_TERMINAL_RUNTIME_TAG_NAME = "python3.11-node20"
+
+
+def get_default_terminal_runtime_image() -> str:
+    """Resolve the shared terminal runtime image from current environment."""
+    full_override = os.getenv("HERMES_TERMINAL_RUNTIME_IMAGE", "").strip()
+    if full_override:
+        return full_override
+
+    repository = os.getenv("HERMES_TERMINAL_RUNTIME_REPOSITORY", "").strip()
+    if not repository:
+        return DEFAULT_LOCAL_TERMINAL_RUNTIME_IMAGE
+
+    tag = os.getenv(
+        "HERMES_TERMINAL_RUNTIME_TAG",
+        DEFAULT_TERMINAL_RUNTIME_TAG_NAME,
+    ).strip()
+    image = f"{repository}:{tag or DEFAULT_TERMINAL_RUNTIME_TAG_NAME}"
+    digest = os.getenv("HERMES_TERMINAL_RUNTIME_DIGEST", "").strip()
+    if digest:
+        image = f"{image}@{digest}"
+    return image
+
+
+def get_default_terminal_docker_image() -> str:
+    """Resolve the default Docker backend runtime image."""
+    return (
+        os.getenv("HERMES_LOCAL_DOCKER_IMAGE", "").strip()
+        or get_default_terminal_runtime_image()
+    )
+
+
+def get_default_terminal_singularity_image() -> str:
+    """Resolve the default Singularity/Apptainer backend runtime image."""
+    return (
+        os.getenv("HERMES_LOCAL_SINGULARITY_IMAGE", "").strip()
+        or f"docker://{get_default_terminal_docker_image()}"
+    )
+
+
+def get_default_terminal_modal_image() -> str:
+    """Resolve the default Modal backend runtime image."""
+    return (
+        os.getenv("HERMES_REMOTE_TERMINAL_IMAGE", "").strip()
+        or get_default_terminal_runtime_image()
+    )
+
+
+def get_default_terminal_daytona_image() -> str:
+    """Resolve the default Daytona backend runtime image."""
+    return (
+        os.getenv("HERMES_REMOTE_TERMINAL_IMAGE", "").strip()
+        or get_default_terminal_runtime_image()
+    )
+
+
+# Backward-compatible snapshots for older imports. Runtime paths in Hermes call
+# the resolver functions above so .env values loaded after import are honored.
+DEFAULT_TERMINAL_RUNTIME_IMAGE = get_default_terminal_runtime_image()
+DEFAULT_TERMINAL_DOCKER_IMAGE = get_default_terminal_docker_image()
+DEFAULT_TERMINAL_SINGULARITY_IMAGE = get_default_terminal_singularity_image()
+DEFAULT_TERMINAL_MODAL_IMAGE = get_default_terminal_modal_image()
+DEFAULT_TERMINAL_DAYTONA_IMAGE = get_default_terminal_daytona_image()
 
 
 def get_hermes_home() -> Path:

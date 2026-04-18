@@ -23,7 +23,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
 
-from hermes_constants import DEFAULT_TERMINAL_DOCKER_IMAGE
+from hermes_constants import (
+    get_default_terminal_daytona_image,
+    get_default_terminal_docker_image,
+    get_default_terminal_modal_image,
+    get_default_terminal_singularity_image,
+)
 from tools.tool_backend_helpers import managed_nous_tools_enabled as _managed_nous_tools_enabled
 
 _IS_WINDOWS = platform.system() == "Windows"
@@ -356,7 +361,7 @@ DEFAULT_CONFIG = {
         # (terminal and execute_code).  Skill-declared required_environment_variables
         # are passed through automatically; this list is for non-skill use cases.
         "env_passthrough": [],
-        "docker_image": DEFAULT_TERMINAL_DOCKER_IMAGE,
+        "docker_image": get_default_terminal_docker_image(),
         "docker_forward_env": [],
         # Explicit environment variables to set inside Docker containers.
         # Unlike docker_forward_env (which reads values from the host process),
@@ -364,9 +369,9 @@ DEFAULT_CONFIG = {
         # runs as a systemd service without access to the user's shell environment.
         # Example: {"SSH_AUTH_SOCK": "/run/user/1000/ssh-agent.sock"}
         "docker_env": {},
-        "singularity_image": "docker://nikolaik/python-nodejs:python3.11-nodejs20",
-        "modal_image": "nikolaik/python-nodejs:python3.11-nodejs20",
-        "daytona_image": "nikolaik/python-nodejs:python3.11-nodejs20",
+        "singularity_image": get_default_terminal_singularity_image(),
+        "modal_image": get_default_terminal_modal_image(),
+        "daytona_image": get_default_terminal_daytona_image(),
         # Container resource limits (docker, singularity, modal, daytona — ignored for local/ssh)
         "container_cpu": 1,
         "container_memory": 5120,       # MB (default 5GB)
@@ -2496,6 +2501,14 @@ def load_config() -> Dict[str, Any]:
     config_path = get_config_path()
     
     config = copy.deepcopy(DEFAULT_CONFIG)
+    # Terminal runtime defaults must be resolved at load time, after ~/.hermes/.env
+    # has been loaded by the CLI entrypoint. DEFAULT_CONFIG is created at import
+    # time and would otherwise freeze HERMES_TERMINAL_RUNTIME_* too early.
+    terminal_defaults = config.setdefault("terminal", {})
+    terminal_defaults["docker_image"] = get_default_terminal_docker_image()
+    terminal_defaults["singularity_image"] = get_default_terminal_singularity_image()
+    terminal_defaults["modal_image"] = get_default_terminal_modal_image()
+    terminal_defaults["daytona_image"] = get_default_terminal_daytona_image()
     
     if config_path.exists():
         try:
@@ -3013,15 +3026,15 @@ def show_config():
     print(f"  Timeout:      {terminal.get('timeout', 60)}s")
     
     if terminal.get('backend') == 'docker':
-        print(f"  Docker image: {terminal.get('docker_image', DEFAULT_TERMINAL_DOCKER_IMAGE)}")
+        print(f"  Docker image: {terminal.get('docker_image', get_default_terminal_docker_image())}")
     elif terminal.get('backend') == 'singularity':
-        print(f"  Image:        {terminal.get('singularity_image', 'docker://nikolaik/python-nodejs:python3.11-nodejs20')}")
+        print(f"  Image:        {terminal.get('singularity_image', get_default_terminal_singularity_image())}")
     elif terminal.get('backend') == 'modal':
-        print(f"  Modal image:  {terminal.get('modal_image', 'nikolaik/python-nodejs:python3.11-nodejs20')}")
+        print(f"  Modal image:  {terminal.get('modal_image', get_default_terminal_modal_image())}")
         modal_token = get_env_value('MODAL_TOKEN_ID')
         print(f"  Modal token:  {'configured' if modal_token else '(not set)'}")
     elif terminal.get('backend') == 'daytona':
-        print(f"  Daytona image: {terminal.get('daytona_image', 'nikolaik/python-nodejs:python3.11-nodejs20')}")
+        print(f"  Daytona image: {terminal.get('daytona_image', get_default_terminal_daytona_image())}")
         daytona_key = get_env_value('DAYTONA_API_KEY')
         print(f"  API key:      {'configured' if daytona_key else '(not set)'}")
     elif terminal.get('backend') == 'ssh':

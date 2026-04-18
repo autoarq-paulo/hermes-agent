@@ -83,9 +83,10 @@ terminal:
   cwd: "."          # Working directory ("." = current dir for local, "/root" for containers)
   timeout: 180      # Per-command timeout in seconds
   env_passthrough: []  # Env var names to forward to sandboxed execution (terminal + execute_code)
-  singularity_image: "docker://nikolaik/python-nodejs:python3.11-nodejs20"  # Container image for Singularity backend
-  modal_image: "nikolaik/python-nodejs:python3.11-nodejs20"                 # Container image for Modal backend
-  daytona_image: "nikolaik/python-nodejs:python3.11-nodejs20"               # Container image for Daytona backend
+  docker_image: "hermes-agent-local:runtime-python3.11-node20"
+  singularity_image: "docker://hermes-agent-local:runtime-python3.11-node20"
+  modal_image: "ghcr.io/autoarq-paulo/hermes-agent-runtime:python3.11-node20" # Opt-in after GHCR publication
+  daytona_image: "ghcr.io/autoarq-paulo/hermes-agent-runtime:python3.11-node20" # Opt-in after GHCR publication
 ```
 
 For cloud sandboxes such as Modal and Daytona, `container_persistent: true` means Hermes will try to preserve filesystem state across sandbox recreation. It does not promise that the same live sandbox, PID space, or background processes will still be running later.
@@ -121,7 +122,7 @@ Runs commands inside a Docker container with security hardening (all capabilitie
 ```yaml
 terminal:
   backend: docker
-  docker_image: "nikolaik/python-nodejs:python3.11-nodejs20"
+  docker_image: "hermes-agent-local:runtime-python3.11-node20"
   docker_mount_cwd_to_workspace: false  # Mount launch dir into /workspace
   docker_forward_env:              # Env vars to forward into container
     - "GITHUB_TOKEN"
@@ -220,7 +221,7 @@ Runs commands in a [Singularity/Apptainer](https://apptainer.org) container. Des
 ```yaml
 terminal:
   backend: singularity
-  singularity_image: "docker://nikolaik/python-nodejs:python3.11-nodejs20"
+  singularity_image: "docker://hermes-agent-local:runtime-python3.11-node20"
   container_cpu: 1                 # CPU cores
   container_memory: 5120           # MB
   container_persistent: true       # Writable overlay persists across sessions
